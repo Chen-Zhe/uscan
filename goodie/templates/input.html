@@ -1,0 +1,14 @@
+{% if matric %}
+<h1 style="color:{% if success %}LawnGreen{% else %}Red{% endif %}; font-size:300%">
+<strong>Metric No. {{ matric }}</strong><br>
+Status: {% if success %}Successfully registered for this event{% else %}Failed to register, {{ reason }}{% endif %}
+</h1>
+{% else %}
+<h1 style="font-size:300%">Awaiting New Scan...</h1>
+{% endif %}
+
+<form action='input.html' method='post'>
+{% csrf_token %}
+{{ form.as_p }}
+<input type='submit' value='Submit' />
+</form>
