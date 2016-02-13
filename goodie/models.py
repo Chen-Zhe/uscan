@@ -6,6 +6,7 @@ class Event(models.Model):
 	start		= models.DateTimeField()
 	finish		= models.DateTimeField()
 	code		= models.CharField(max_length=200)
+	regex	    = models.TextField()
 	def __str__(self):
 		return self.title
 

@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
+import re
 import json
 
 from django.utils import timezone
 from goodie.models import *
 
 from goodie.forms import GoodieForm
+
 
 def index(request):
     return HttpResponse("hello")
@@ -17,7 +19,9 @@ def check_event(request,event_code):
     except Event.DoesNotExist:
         return HttpResponse('false')
 
-    return HttpResponse(event.title)
+    return_object = {"title": event.title, "regex": event.regex}
+
+    return HttpResponse(json.dumps(return_object))
 
 
 def list_matric(request,event):
@@ -34,6 +38,7 @@ def list_matric(request,event):
 
     return HttpResponse(json.dumps(matric_list))
 
+
 def manual_register(request,event):
     try:
         Event.objects.get(code=event)
@@ -48,7 +53,7 @@ def manual_register(request,event):
         if form.is_valid():
             matric = form.cleaned_data['matric'].upper()
             success = False
-            if matric[0]=='U' and len(matric)==9:
+            if re.match(Event.objects.get(code=event).regex,matric):
                 try:
                     Goodie.objects.get(matric=matric,event= Event.objects.get(code=event))
                 except Goodie.DoesNotExist:
@@ -56,7 +61,7 @@ def manual_register(request,event):
                     tmp.save()
                     success = True
             else:
-                fail_reason = "invalid matric number"
+                fail_reason = "invalid matric number for this event"
             form = GoodieForm()
             return render(request, 'input.html', {'form': form, 'success': success, 'matric': matric, 'reason':fail_reason})
     return render(request, 'input.html', {'form': form,})
@@ -68,9 +73,11 @@ def register(request, matric_number, event):
 
     try:
         Goodie.objects.get(matric=matric_number,event= Event.objects.get(code=event))
+        if re.match(Event.objects.get(code=event).regex,matric_number):
+            return HttpResponse(json.dump({"flag": False,"message": "Invalid matric for this event"}))
     except Goodie.DoesNotExist:
         tmp = Goodie(matric=matric_number, event= Event.objects.get(code=event), time=timezone.now())
         tmp.save()
-        return HttpResponse('New input success! matric : {0} , event : {1}'.format(matric_number,Event.objects.get(code=event).title));
+        return HttpResponse(json.dumps({"flag": False, "message": 'New input success! matric : {0} , event : {1}'.format(matric_number,Event.objects.get(code=event).title)}));
 
-    return HttpResponse('This matric is already registered for this event')
+    return HttpResponse(json.dumps({"flag": False, "message": 'This matric is already registered for this event'}))
