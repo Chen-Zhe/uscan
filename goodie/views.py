@@ -74,7 +74,7 @@ def register(request, matric_number, event):
     try:
         Goodie.objects.get(matric=matric_number,event= Event.objects.get(code=event))
         if re.match(Event.objects.get(code=event).regex,matric_number):
-            return HttpResponse(json.dump({"flag": False,"message": "Invalid matric for this event"}))
+            return HttpResponse(json.dumps({"flag": False,"message": "Invalid matric for this event"}))
     except Goodie.DoesNotExist:
         tmp = Goodie(matric=matric_number, event= Event.objects.get(code=event), time=timezone.now())
         tmp.save()
