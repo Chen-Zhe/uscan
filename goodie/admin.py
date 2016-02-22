@@ -9,7 +9,7 @@ from .models import Event, Goodie, School, Problem
 '''
 
 class EventAdmin(admin.ModelAdmin):
-	list_display = ['id', 'title', 'start', 'finish', 'code']
+	list_display = ['id', 'title', 'start', 'finish', 'code','regex']
 
 class GoodieAdmin(admin.ModelAdmin):
 	list_display = ['matric', 'get_event', 'time']
