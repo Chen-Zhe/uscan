@@ -78,6 +78,6 @@ def register(request, matric_number, event):
     except Goodie.DoesNotExist:
         tmp = Goodie(matric=matric_number, event= Event.objects.get(code=event), time=timezone.now())
         tmp.save()
-        return HttpResponse(json.dumps({"flag": False, "message": 'New input success! matric : {0} , event : {1}'.format(matric_number,Event.objects.get(code=event).title)}));
+        return HttpResponse(json.dumps({"flag": True, "message": 'New input success! matric : {0} , event : {1}'.format(matric_number,Event.objects.get(code=event).title)}));
 
     return HttpResponse(json.dumps({"flag": False, "message": 'This matric is already registered for this event'}))
