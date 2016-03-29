@@ -70,6 +70,10 @@ def manual_register(request,event):
 def register(request, matric_number, event):
 
     matric_number = matric_number.upper()
+    try:
+        Event.objects.get(code= event)
+    except Event.DoesNotExist:
+        return HttpResponse(json.dumps({"flag": False, "message": "Invalid event code"}))
 
     try:
         Goodie.objects.get(matric=matric_number,event= Event.objects.get(code=event))
